@@ -1,0 +1,13 @@
+{
+  "getOrderStatus": {
+    "schema": {
+      "protocol": "http",
+      "method": "GET",
+      "host": "express-alb-1767735639.ap-southeast-1.elb.amazonaws.com",
+      "path": "/orders/<%=context.orderId%>",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  }
+}
