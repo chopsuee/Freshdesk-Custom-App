@@ -1,1 +1,5 @@
-"/Express/.terraform/" 
+# Terraform files
+Express/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
