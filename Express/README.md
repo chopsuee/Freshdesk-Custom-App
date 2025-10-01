@@ -58,13 +58,34 @@ terraform output app_url
 
 ## API Endpoints
 
-- `GET /orders/101` - Get order by ID
-- `PUT /orders/101/status` - Update order status
+- `POST /orders` - Create new order (prevents duplicates)
+- `GET /orders/:id` - Get order by ID from DynamoDB
+- `PUT /orders/:id/status` - Update order status in DynamoDB
+- `PUT /orders/:id` - Update product name and/or status
+- `DELETE /orders/:id` - Delete order from DynamoDB
 
-Example:
+Examples:
 ```bash
-curl http://your-alb-url/orders/101
-curl -X PUT http://your-alb-url/orders/101/status -H "Content-Type: application/json" -d '{"status":"delivered"}'
+# Create order
+curl -X POST http://your-alb-url/orders \
+  -H "Content-Type: application/json" \
+  -d '{"order_id":"103","product_name":"Mouse","status":"pending"}'
+
+# Get order
+curl http://your-alb-url/orders/103
+
+# Update status only
+curl -X PUT http://your-alb-url/orders/103/status \
+  -H "Content-Type: application/json" \
+  -d '{"status":"delivered"}'
+
+# Update product (name and/or status)
+curl -X PUT http://your-alb-url/orders/103 \
+  -H "Content-Type: application/json" \
+  -d '{"product_name":"Wireless Mouse","status":"shipped"}'
+
+# Delete order
+curl -X DELETE http://your-alb-url/orders/103
 ```
 
 ## Architecture
@@ -72,8 +93,10 @@ curl -X PUT http://your-alb-url/orders/101/status -H "Content-Type: application/
 - **ECS Fargate**: Serverless container hosting
 - **Application Load Balancer**: Traffic distribution
 - **ECR**: Private container registry
+- **DynamoDB**: NoSQL database for order storage (Freshdesk_Table_Orders)
 - **VPC**: Isolated network with public subnets
 - **Security Groups**: Port 80 (HTTP) and 3000 (app) access
+- **IAM Roles**: DynamoDB access permissions for ECS tasks
 
 ## Commands
 
@@ -107,6 +130,7 @@ aws logs describe-log-groups --log-group-name-prefix /ecs/express-task
 - **Region**: ap-southeast-1 (Singapore)
 - **Container**: 256 CPU, 512 MB memory
 - **Port**: Application runs on 3000, accessible via port 80
+- **Database**: DynamoDB table "Freshdesk_Table_Orders"
 
 ## Cleanup
 

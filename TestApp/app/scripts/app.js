@@ -28,8 +28,8 @@ async function fetchOrderStatus(client, orderId) {
     const orderData = JSON.parse(response.response);
     console.log('Parsed order data:', orderData);
     
-    document.getElementById('order-id').textContent = `#${orderData.id}`;
-    document.getElementById('product-name').textContent = orderData.product;
+    document.getElementById('order-id').textContent = `#${orderData.order_id}`;
+    document.getElementById('product-name').textContent = orderData.product_name;
     document.getElementById('status-badge').textContent = orderData.status;
     document.getElementById('current-status-text').textContent = orderData.status;
     

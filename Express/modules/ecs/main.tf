@@ -16,6 +16,18 @@ variable "app_image" {
   type = string
 }
 
+variable "task_execution_role_arn" {
+  type = string
+}
+
+variable "task_role_arn" {
+  type = string
+}
+
+variable "dynamodb_table_name" {
+  type = string
+}
+
 
 
 resource "aws_ecs_cluster" "main" {
@@ -28,13 +40,23 @@ resource "aws_ecs_task_definition" "express" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-  execution_role_arn       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole"
-
+  execution_role_arn       = var.task_execution_role_arn
+  task_role_arn           = var.task_role_arn
 
   container_definitions = jsonencode([
     {
       name  = "express"
       image = var.app_image
+      environment = [
+        {
+          name  = "DYNAMODB_TABLE_NAME"
+          value = var.dynamodb_table_name
+        },
+        {
+          name  = "AWS_DEFAULT_REGION"
+          value = "ap-southeast-1"
+        }
+      ]
       portMappings = [
         {
           containerPort = 3000
